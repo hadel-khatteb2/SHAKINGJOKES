@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1e1b4b">
+  <title>נער אותי!</title>
+  <style>
+    :root {
+      --bg1: #1e1b4b;
+      --bg2: #6d28d9;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #f59e0b;
+      --accent-dark: #d97706;
+      --chip: rgba(255, 255, 255, 0.15);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --card: #1f2937;
+        --text: #f3f4f6;
+        --muted: #9ca3af;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(160deg, var(--bg1), var(--bg2));
+      background-attachment: fixed;
+      color: #fff;
+      padding: 16px;
+    }
+    main { max-width: 520px; margin: 0 auto; }
+    header { text-align: center; margin: 8px 0 16px; }
+    h1 { margin: 0; font-size: 2.2rem; }
+    .sub { margin: 4px 0 0; opacity: 0.85; }
+
+    .modes { display: flex; gap: 8px; margin-bottom: 16px; }
+    .modes button {
+      flex: 1;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 6px;
+      font-size: 1rem;
+      background: var(--chip);
+      color: #fff;
+      cursor: pointer;
+    }
+    .modes button.active { background: #fff; color: var(--bg1); font-weight: 700; }
+
+    .card {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      min-height: 220px;
+    }
+    .center { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .big-emoji { font-size: 4rem; line-height: 1; }
+    .wiggle { animation: wiggle 1.2s ease-in-out infinite; display: inline-block; }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0); }
+      20% { transform: rotate(-15deg); }
+      40% { transform: rotate(15deg); }
+      60% { transform: rotate(-10deg); }
+      80% { transform: rotate(10deg); }
+    }
+    .shake { animation: shake 0.5s; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+
+    button.primary {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 28px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: var(--accent);
+      color: #1f2937;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    button.primary:active { background: var(--accent-dark); }
+    button.secondary {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: transparent;
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    /* Content coming from the APIs is in English */
+    .content { direction: ltr; text-align: left; }
+    .joke-setup { font-size: 1.25rem; font-weight: 600; margin: 0 0 12px; }
+    .joke-delivery { font-size: 1.25rem; margin: 0; color: var(--accent-dark); }
+    .advice { font-size: 1.4rem; font-weight: 600; text-align: center; margin: 24px 0; }
+    .meal img { width: 100%; border-radius: 14px; display: block; }
+    .meal h2 { margin: 12px 0 4px; }
+    .tags { color: var(--muted); margin: 0 0 12px; }
+    .meal ul { padding-left: 20px; margin: 0 0 12px; }
+    .meal details summary { cursor: pointer; font-weight: 600; }
+    .meal p.instructions { white-space: pre-line; }
+    .meal a { color: var(--accent-dark); }
+    .meta { color: var(--muted); font-size: 0.85rem; margin-top: 12px; }
+
+    .sensor {
+      margin-top: 16px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 16px;
+      padding: 12px 16px;
+    }
+    .sensor summary { cursor: pointer; font-weight: 600; }
+    .axes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; text-align: center; direction: ltr; }
+    .axes div { background: var(--chip); border-radius: 10px; padding: 8px; font-variant-numeric: tabular-nums; }
+    .axes b { display: block; font-size: 0.8rem; opacity: 0.8; }
+    .meter { height: 14px; background: var(--chip); border-radius: 999px; overflow: hidden; position: relative; direction: ltr; }
+    .meter span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #22c55e, #f59e0b, #ef4444); transition: width 0.08s; }
+    .meter i { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; }
+    .row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    .row input { flex: 1; }
+    .note { font-size: 0.9rem; opacity: 0.85; }
+
+    footer { text-align: center; font-size: 0.8rem; opacity: 0.7; margin: 24px 0 8px; }
+    footer a { color: #fff; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>📳 נער אותי!</h1>
+    <p class="sub">נערו את הפלאפון וקבלו הפתעה</p>
+  </header>
+
+  <nav class="modes">
+    <button data-mode="joke" class="active">😂 בדיחה</button>
+    <button data-mode="meal">🍝 מתכון</button>
+    <button data-mode="advice">💡 עצה</button>
+  </nav>
+
+  <section id="card" class="card center">
+    <div class="big-emoji">📱</div>
+    <p>כדי לזהות ניעור, האתר צריך גישה לחיישן התנועה (מד התאוצה) של הפלאפון.</p>
+    <button id="start-btn" class="primary">התחל</button>
+  </section>
+
+  <button id="manual-btn" class="secondary">אין חיישן? לחצו כאן במקום לנער</button>
+
+  <details class="sensor" open>
+    <summary>📊 מד התאוצה בזמן אמת (m/s²)</summary>
+    <div class="axes">
+      <div><b>X</b><span id="ax">–</span></div>
+      <div><b>Y</b><span id="ay">–</span></div>
+      <div><b>Z</b><span id="az">–</span></div>
+    </div>
+    <div>עוצמת ניעור:</div>
+    <div class="meter"><span id="power"></span><i id="threshold-mark"></i></div>
+    <div class="row">
+      <label for="sensitivity">רגישות</label>
+      <input id="sensitivity" type="range" min="8" max="40" value="20">
+      <span id="sens-val">20</span>
+    </div>
+    <p id="sensor-status" class="note">החיישן עוד לא הופעל.</p>
+  </details>
+
+  <footer>
+    התוכן מגיע מ־
+    <a href="https://jokeapi.dev" target="_blank" rel="noopener">JokeAPI</a> ·
+    <a href="https://www.themealdb.com" target="_blank" rel="noopener">TheMealDB</a> ·
+    <a href="https://api.adviceslip.com" target="_blank" rel="noopener">Advice Slip</a>
+  </footer>
+</main>
+
+<script>
+  // ---------- APIs ----------
+  const MODES = {
+    joke: {
+      url: 'https://v2.jokeapi.dev/joke/Any?safe-mode',
+      render: renderJoke
+    },
+    meal: {
+      url: 'https://www.themealdb.com/api/json/v1/1/random.php',
+      render: renderMeal
+    },
+    advice: {
+      url: 'https://api.adviceslip.com/advice',
+      render: renderAdvice
+    }
+  };
+
+  const card = document.getElementById('card');
+  const powerBar = document.getElementById('power');
+  const thresholdMark = document.getElementById('threshold-mark');
+  const sensInput = document.getElementById('sensitivity');
+  const sensVal = document.getElementById('sens-val');
+  const sensorStatus = document.getElementById('sensor-status');
+
+  const METER_MAX = 50;      // shake power that fills the meter
+  const COOLDOWN_MS = 1500;  // minimum time between two shakes
+
+  let mode = 'joke';
+  let threshold = Number(sensInput.value);
+  let last = null;
+  let lastShake = 0;
+  let loading = false;
+  let started = false;
+
+  // ---------- Small DOM helper (textContent keeps API text safe) ----------
+  function el(tag, props = {}, children = []) {
+    const node = document.createElement(tag);
+    Object.assign(node, props);
+    for (const child of children) node.append(child);
+    return node;
+  }
+
+  function showCard(nodes, centered = false) {
+    card.classList.toggle('center', centered);
+    card.replaceChildren(...nodes);
+  }
+
+  function showWaiting() {
+    const labels = { joke: 'בדיחה', meal: 'מתכון', advice: 'עצה' };
+    showCard([
+      el('div', { className: 'big-emoji wiggle', textContent: '📳' }),
+      el('p', { textContent: `נערו את הפלאפון כדי לקבל ${labels[mode]}!` })
+    ], true);
+  }
+
+  // ---------- Renderers ----------
+  function renderJoke(data) {
+    const box = el('div', { className: 'content' });
+    if (data.type === 'twopart') {
+      box.append(
+        el('p', { className: 'joke-setup', textContent: data.setup }),
+        el('p', { className: 'joke-delivery', textContent: data.delivery })
+      );
+    } else {
+      box.append(el('p', { className: 'joke-setup', textContent: data.joke }));
+    }
+    box.append(el('div', { className: 'meta', textContent: `Category: ${data.category}` }));
+    return [box];
+  }
+
+  function renderMeal(data) {
+    const meal = data.meals[0];
+    const ingredients = el('ul');
+    for (let i = 1; i <= 20; i++) {
+      const name = (meal['strIngredient' + i] || '').trim();
+      const measure = (meal['strMeasure' + i] || '').trim();
+      if (name) ingredients.append(el('li', { textContent: `${measure} ${name}`.trim() }));
+    }
+    const box = el('div', { className: 'content meal' }, [
+      el('img', { src: meal.strMealThumb, alt: meal.strMeal }),
+      el('h2', { textContent: meal.strMeal }),
+      el('p', { className: 'tags', textContent: `${meal.strCategory} · ${meal.strArea}` }),
+      el('strong', { textContent: 'Ingredients' }),
+      ingredients,
+      el('details', {}, [
+        el('summary', { textContent: 'Instructions' }),
+        el('p', { className: 'instructions', textContent: meal.strInstructions })
+      ])
+    ]);
+    if (meal.strYoutube) {
+      box.append(el('p', {}, [
+        el('a', { href: meal.strYoutube, target: '_blank', rel: 'noopener', textContent: '▶ Watch on YouTube' })
+      ]));
+    }
+    return [box];
+  }
+
+  function renderAdvice(data) {
+    return [el('p', { className: 'content advice', textContent: `“${data.slip.advice}”` })];
+  }
+
+  // ---------- Fetch new content ----------
+  async function getSurprise() {
+    if (loading) return;
+    loading = true;
+    if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+    card.classList.remove('shake');
+    void card.offsetWidth; // restart the animation
+    card.classList.add('shake');
+    showCard([el('div', { className: 'big-emoji wiggle', textContent: '⏳' }), el('p', { textContent: 'טוען...' })], true);
+
+    try {
+      const { url, render } = MODES[mode];
+      // Advice Slip caches answers for 2 seconds, so skip the cache
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      showCard([...render(data), el('p', { className: 'meta', textContent: 'נערו שוב לעוד אחד 📳' })]);
+    } catch (err) {
+      showCard([
+        el('div', { className: 'big-emoji', textContent: '😕' }),
+        el('p', { textContent: 'משהו השתבש בטעינה. בדקו את החיבור לאינטרנט ונסו שוב.' }),
+        el('p', { className: 'meta', textContent: String(err.message) })
+      ], true);
+    } finally {
+      loading = false;
+    }
+  }
+
+  // ---------- Accelerometer / shake detection ----------
+  function onMotion(e) {
+    const a = e.accelerationIncludingGravity;
+    if (!a || a.x === null) return;
+
+    if (!started) {
+      started = true;
+      sensorStatus.textContent = '✅ החיישן פעיל. נערו את הפלאפון!';
+    }
+
+    document.getElementById('ax').textContent = a.x.toFixed(1);
+    document.getElementById('ay').textContent = a.y.toFixed(1);
+    document.getElementById('az').textContent = a.z.toFixed(1);
+
+    if (last) {
+      // How much the acceleration changed since the last reading
+      const power = Math.abs(a.x - last.x) + Math.abs(a.y - last.y) + Math.abs(a.z - last.z);
+      powerBar.style.width = Math.min(power / METER_MAX, 1) * 100 + '%';
+
+      const now = Date.now();
+      if (power > threshold && now - lastShake > COOLDOWN_MS) {
+        lastShake = now;
+        getSurprise();
+      }
+    }
+    last = { x: a.x, y: a.y, z: a.z };
+  }
+
+  async function startSensor() {
+    // iOS 13+ requires asking permission from a user tap
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      try {
+        const answer = await DeviceMotionEvent.requestPermission();
+        if (answer !== 'granted') {
+          sensorStatus.textContent = '⛔ לא ניתנה הרשאה לחיישן. אפשר להשתמש בכפתור במקום.';
+          showWaiting();
+          return;
+        }
+      } catch (err) {
+        sensorStatus.textContent = '⛔ שגיאה בבקשת הרשאה: ' + err.message;
+      }
+    }
+
+    if (typeof DeviceMotionEvent === 'undefined') {
+      sensorStatus.textContent = '⚠️ הדפדפן הזה לא תומך בחיישן תנועה. השתמשו בכפתור.';
+    } else {
+      window.addEventListener('devicemotion', onMotion);
+      sensorStatus.textContent = 'מחכה לנתונים מהחיישן...';
+      setTimeout(() => {
+        if (!started) sensorStatus.textContent = '⚠️ לא התקבלו נתונים מהחיישן (במחשב זה רגיל). השתמשו בכפתור.';
+      }, 1500);
+    }
+    showWaiting();
+  }
+
+  // ---------- UI events ----------
+  document.getElementById('start-btn').addEventListener('click', startSensor);
+  document.getElementById('manual-btn').addEventListener('click', getSurprise);
+
+  document.querySelectorAll('.modes button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.modes button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      if (!document.getElementById('start-btn')) showWaiting();
+    });
+  });
+
+  function updateThreshold() {
+    threshold = Number(sensInput.value);
+    sensVal.textContent = threshold;
+    thresholdMark.style.left = Math.min(threshold / METER_MAX, 1) * 100 + '%';
+  }
+  sensInput.addEventListener('input', updateThreshold);
+  updateThreshold();
+</script>
+</body>
+</html>
